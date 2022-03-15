@@ -1,3 +1,4 @@
+from email.policy import default
 from query import Search, find_shops
 from urllib.parse import urlparse
 import time
@@ -12,11 +13,12 @@ def process(link):
     html = D.download(L)
     last_domain = urlparse(L).netloc
     try:       
-        candidates, shops = find_shops(L, html) 
+        candidates, shops = find_shops(L, html)
         return candidates, shops
-    except TypeError as e:
-                print('Error__________  ', e)
-
+    except TypeError:
+        candidates, shops = set(), set()
+        return candidates, shops
+    
 def Throttle(link, last_domain):
     if last_domain:
         if urlparse(link).netloc == last_domain:
@@ -95,5 +97,14 @@ def main(query, n_results):
 
 
 if __name__ == '__main__':
-    main()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-q', default=None,
+                         type = str, help = 'Query string to make the search on')
+    parser.add_argument('-n', default = 20, type = int, help = 'Number of spected links to retrieve')
+    parser.add_argument('-o', default= 'links.txt',
+                         type= argparse.FileType('w'), help= 'output file to print on')
+    args = parser.parse_args()
+    l_shops = main(args.q, args.n)
+    print(l_shops, file= args.o)
         
