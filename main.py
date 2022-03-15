@@ -1,4 +1,3 @@
-from email.policy import default
 from query import Search, find_shops
 from urllib.parse import urlparse
 import time
